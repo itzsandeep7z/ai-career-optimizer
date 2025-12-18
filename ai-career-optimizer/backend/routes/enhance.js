@@ -1,9 +1,12 @@
 const express = require("express");
-const askGroq = require("../services/groq");
-
 const router = express.Router();
+const Groq = require("groq-sdk");
 
-router.post("/enhance", async (req, res) => {
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY
+});
+
+router.post("/", async (req, res) => {
   try {
     const { resume, targetRole } = req.body;
 
@@ -17,21 +20,21 @@ router.post("/enhance", async (req, res) => {
 Improve this resume for the role of ${targetRole}:
 
 ${resume}
-
-Return improved resume only.
 `;
 
     const completion = await groq.chat.completions.create({
-      model: "llama3-8b-8192",
+      model: "llama-3.1-8b-instant",
       messages: [{ role: "user", content: prompt }]
     });
 
     res.json({
       enhancedResume: completion.choices[0].message.content
     });
-
   } catch (err) {
-    res.status(500).json({ error: "Resume enhancement failed" });
+    res.status(500).json({
+      error: "Resume enhancement failed",
+      details: err.message
+    });
   }
 });
 
