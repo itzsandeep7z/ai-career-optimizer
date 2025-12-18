@@ -1,105 +1,92 @@
-async function createResume() {
-  const res = await fetch("https://ai-career-optimizer.onrender.com/api/resume/create", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: name.value,
-      skills: skills.value,
-      education: education.value,
-      projects: projects.value
-    })
-  });
+const API_BASE = "https://ai-career-optimizer.onrender.com";
 
-  const data = await res.json();
-  document.getElementById("resumeOutput").innerText = data.resume;
-}const API_BASE = "https://ai-career-optimizer.onrender.com";
-
-const questions = [
-  { key: "name", text: "Enter your full name:" },
-  { key: "email", text: "Enter your email:" },
-  { key: "phone", text: "Enter your phone number:" },
-  { key: "objective", text: "What is your career objective?" },
-  { key: "education", text: "Enter your education details:" },
-  { key: "skills", text: "Enter your skills (comma separated):" },
-  { key: "experience", text: "Enter your experience (or Fresher):" },
-  { key: "projects", text: "Enter your projects:" },
-  { key: "certifications", text: "Enter certifications (or None):" }
-];
-
-let currentStep = 0;
-let resumeData = {};
-
-// Start Resume Wizard
-function startResumeWizard() {
-  currentStep = 0;
-  resumeData = {};
-  askNextQuestion();
-}
-
-// Ask Question
-function askNextQuestion() {
-  if (currentStep >= questions.length) {
-    generateResume();
-    return;
-  }
-
-  const q = questions[currentStep];
-  document.getElementById("questionBox").innerText = q.text;
-  document.getElementById("answerInput").value = "";
-}
-
-// Submit Answer
-function submitAnswer() {
-  const answer = document.getElementById("answerInput").value.trim();
-  if (!answer) {
-    alert("Please enter a value");
-    return;
-  }
-
-  resumeData[questions[currentStep].key] = answer;
-  currentStep++;
-  askNextQuestion();
-}
-
-// Generate Resume (Final Step)
+/* =========================================================
+   RESUME CREATOR (FIXED — NO UNDEFINED)
+   ========================================================= */
 async function generateResume() {
-  document.getElementById("questionBox").innerText = "Generating Resume...";
-  document.getElementById("answerInput").style.display = "none";
-  document.getElementById("submitBtn").style.display = "none";
+  const name = document.querySelector(
+    'input[placeholder="Full Name"]'
+  )?.value.trim();
+
+  const skills = document.querySelector(
+    'input[placeholder="Skills"]'
+  )?.value.trim();
+
+  const education = document.querySelector(
+    'input[placeholder="Education"]'
+  )?.value.trim();
+
+  const projects = document.querySelector(
+    'input[placeholder="Projects"]'
+  )?.value.trim();
+
+  if (!name || !skills || !education) {
+    alert("Please fill Name, Skills and Education");
+    return;
+  }
 
   try {
     const res = await fetch(`${API_BASE}/api/resume/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(resumeData)
+      body: JSON.stringify({
+        name,
+        skills,
+        education,
+        projects
+      })
     });
 
     const data = await res.json();
+
+    if (!data.resume) {
+      throw new Error("Resume not returned");
+    }
+
     document.getElementById("resumeOutput").innerText = data.resume;
   } catch (err) {
+    console.error(err);
     alert("Resume generation failed");
   }
 }
 
-
+/* =========================================================
+   RESUME ENHANCER (FIXED — NO UNDEFINED)
+   ========================================================= */
 async function enhanceResume() {
-  const res = await fetch("https://ai-career-optimizer.onrender.com/api/resume/enhance", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      resumeText: resumeText.value,
-      targetRole: role.value
-    })
-  });
+  const resumeText = document.querySelector(
+    'textarea[placeholder="Paste your resume here"]'
+  )?.value.trim();
 
-  const data = await res.json();
-  document.getElementById("enhancedOutput").innerText = data.improved;
+  const targetRole = document.querySelector(
+    'input[placeholder="Target Role"]'
+  )?.value.trim();
+
+  if (!resumeText || !targetRole) {
+    alert("Please paste resume and enter target role");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/resume/enhance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        resume: resumeText,
+        targetRole
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.enhancedResume) {
+      throw new Error("Enhanced resume missing");
+    }
+
+    document.getElementById("enhancedOutput").innerText =
+      data.enhancedResume;
+  } catch (err) {
+    console.error(err);
+    alert("Resume enhancement failed");
+  }
 }
-const toggleBtn = document.getElementById("themeToggle");
-
-toggleBtn.onclick = () => {
-  document.body.classList.toggle("dark");
-};
-
-
-
