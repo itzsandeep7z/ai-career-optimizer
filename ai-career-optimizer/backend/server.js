@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const resumeRoutes = require("./route/resume");
+const resumeRoutes = require("./routes/resume");
+const enhanceRoutes = require("./routes/enhance");
+const interviewRoutes = require("./routes/interview");
 
 const app = express();
 app.use(cors());
@@ -13,13 +15,13 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/resume", resumeRoutes);
+app.use("/api/resume", enhanceRoutes);
+app.use("/api/interview", interviewRoutes);
 
 const PORT = process.env.PORT || 5000;
-const enhanceRoutes = require("./routes/enhance");
-app.use("/api/resume", enhanceRoutes);
-const interviewRoutes = require("./routes/interview");
-app.use("/api/interview", interviewRoutes);
+
 app.listen(PORT, () => {
   console.log("Server started on port " + PORT);
 });
+
 
