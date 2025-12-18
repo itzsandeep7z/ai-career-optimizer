@@ -4,17 +4,10 @@ const API_BASE = "https://ai-career-optimizer.onrender.com";
    RESUME CREATOR (FIXED — NO UNDEFINED)
    ========================================================= */
 async function generateResume() {
-  // 🔒 Scope ONLY Resume Creator section
-  const resumeSection = document.querySelector(
-    'section.card'
-  );
-
-  const inputs = resumeSection.querySelectorAll("input");
-
-  const name = inputs[0]?.value.trim();
-  const skills = inputs[1]?.value.trim();
-  const education = inputs[2]?.value.trim();
-  const projects = inputs[3]?.value.trim();
+  const name = document.getElementById("rc-name").value.trim();
+  const skills = document.getElementById("rc-skills").value.trim();
+  const education = document.getElementById("rc-education").value.trim();
+  const projects = document.getElementById("rc-projects").value.trim();
 
   if (!name || !skills || !education) {
     alert("Provide valid name, skill and education");
@@ -42,6 +35,7 @@ async function generateResume() {
       data.resume || "Resume generation failed";
 
   } catch (err) {
+    console.error(err);
     alert("Server error");
   }
 }
@@ -85,5 +79,6 @@ async function enhanceResume() {
     alert("Resume enhancement failed");
   }
 }
+
 
 
