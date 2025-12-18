@@ -14,21 +14,20 @@
     <h1>AI Career Optimizer</h1>
     <p>Resume · Interview · Career Growth</p>
   </header>
+  
+ <!-- Resume Creator -->
+<section class="card">
+  <h2>Resume Creator</h2>
 
-  <!-- ================= RESUME CREATOR ================= -->
-  <section class="card">
-    <h2>Resume Creator</h2>
+  <input id="rc-name" type="text" placeholder="Full Name" />
+  <input id="rc-skills" type="text" placeholder="Skills" />
+  <input id="rc-education" type="text" placeholder="Education" />
+  <input id="rc-projects" type="text" placeholder="Projects" />
 
-    <input type="text" placeholder="Full Name" />
-    <input type="text" placeholder="Skills" />
-    <input type="text" placeholder="Education" />
-    <input type="text" placeholder="Projects" />
+  <button onclick="generateResume()">Generate Resume</button>
 
-    <button onclick="generateResume()">Generate Resume</button>
-
-    <pre id="resumeOutput"></pre>
-  </section>
-
+  <pre id="resumeOutput"></pre>
+</section>
   <!-- ================= RESUME ENHANCER ================= -->
   <section class="card">
     <h2>Resume Enhancer</h2>
@@ -68,4 +67,5 @@
 
 </body>
 </html>
+
 
