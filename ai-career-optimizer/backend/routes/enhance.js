@@ -4,31 +4,34 @@ const askGroq = require("../services/groq");
 const router = express.Router();
 
 router.post("/enhance", async (req, res) => {
-  const { resumeText, targetRole } = req.body;
+  try {
+    const { resume, targetRole } = req.body;
 
-  const prompt = `
-Improve the following resume for the role: ${targetRole}
+    if (!resume || !targetRole) {
+      return res.status(400).json({
+        error: "Resume and target role are required"
+      });
+    }
 
-Rules:
-- Optimize for ATS keywords
-- Strengthen bullet points with action verbs
-- Quantify impact where possible
-- Keep professional tone
-- Do not invent experience
+    const prompt = `
+Improve this resume for the role of ${targetRole}:
 
-Resume:
-${resumeText}
+${resume}
+
+Return improved resume only.
 `;
 
-  try {
-    const improved = await askGroq(prompt);
-    res.json({ improved });
-  } catch (error) {
-    console.error("ENHANCER ERROR:", error.response?.data || error.message);
-    res.status(500).json({
-      error: "Resume enhancement failed",
-      details: error.response?.data || error.message
+    const completion = await groq.chat.completions.create({
+      model: "llama3-8b-8192",
+      messages: [{ role: "user", content: prompt }]
     });
+
+    res.json({
+      enhancedResume: completion.choices[0].message.content
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "Resume enhancement failed" });
   }
 });
 
