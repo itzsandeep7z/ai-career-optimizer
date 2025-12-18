@@ -1,108 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Voice Interview</title>
+  <meta charset="UTF-8" />
+  <title>AI Voice Mock Interview</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h2>AI Voice Mock Interview</h2>
+  <h2>AI Mock Interview</h2>
 
-<button onclick="startInterview()">Start Interview</button>
-<button onclick="startListening()">Speak Answer</button>
-<button onclick="submitAnswer()">Done</button>
+  <input
+    type="text"
+    id="interviewType"
+    placeholder="e.g. Java Developer Interview, HR Interview, Law Interview"
+  />
 
-<p><strong>AI Question:</strong></p>
-<p id="question"></p>
+  <br><br>
 
-<p><strong>Your Answer:</strong></p>
-<p id="answer"></p>
+  <button onclick="startInterview()">Start Interview</button>
+  <button onclick="submitAnswer()">Submit Answer</button>
+  <button onclick="finishInterview()">Done</button>
 
-<script>
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
+  <h3>AI Question:</h3>
+  <p id="question"></p>
 
-recognition.lang = "en-US";
-recognition.interimResults = true;
-recognition.continuous = true;
+  <h3>Your Answer:</h3>
+  <textarea id="answer" rows="5"></textarea>
 
-let currentQuestion = "";
-let spokenAnswer = "";
-let listening = false;
+  <h3>AI Feedback:</h3>
+  <p id="feedback"></p>
 
-function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  window.speechSynthesis.speak(utterance);
-}
+  <script>
+    const API_BASE = "https://ai-career-optimizer.onrender.com";
 
-async function startInterview() {
-  const res = await fetch("https://ai-career-optimizer.onrender.com/api/interview/start", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      role: "Software Engineer",
-      skills: "C, Java, HTML, CSS",
-      difficulty: "Beginner"
-    })
-  });
+    let currentQuestion = "";
+    let allAnswers = [];
 
-  const data = await res.json();
-  currentQuestion = data.question;
-  document.getElementById("question").innerText = currentQuestion;
-  speak(currentQuestion);
-}
+    function startInterview() {
+      const interviewType = document.getElementById("interviewType").value;
 
-function startListening() {
-  spokenAnswer = "";
-  listening = true;
-  recognition.start();
-}
+      fetch(`${API_BASE}/api/interview/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interviewType })
+      })
+      .then(res => res.json())
+      .then(data => {
+        currentQuestion = data.question;
+        document.getElementById("question").innerText = data.question;
+      });
+    }
 
-recognition.onresult = (event) => {
-  spokenAnswer = Array.from(event.results)
-    .map(result => result[0].transcript)
-    .join(" ");
+    function submitAnswer() {
+      const interviewType = document.getElementById("interviewType").value;
+      const answer = document.getElementById("answer").value;
 
-  document.getElementById("answer").innerText = spokenAnswer;
-};
+      allAnswers.push(`Q: ${currentQuestion}\nA: ${answer}`);
 
-recognition.onerror = (event) => {
-  console.warn("Speech error:", event.error);
-};
+      fetch(`${API_BASE}/api/interview/answer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          interviewType,
+          question: currentQuestion,
+          answer
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("feedback").innerText = data.response;
+        currentQuestion = data.nextQuestion || "";
+      });
+    }
 
-recognition.onend = () => {
-  if (listening) {
-    recognition.start(); // auto-restart
-  }
-};
+    function finishInterview() {
+      const interviewType = document.getElementById("interviewType").value;
 
-async function submitAnswer() {
-  listening = false;
-  recognition.stop();
-
-  if (!spokenAnswer.trim()) {
-    alert("No speech detected. Please speak louder and try again.");
-    return;
-  }
-
-  const res = await fetch("https://ai-career-optimizer.onrender.com/api/interview/answer", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      role: "Software Engineer",
-      question: currentQuestion,
-      answer: spokenAnswer
-    })
-  });
-
-  const data = await res.json();
-  document.getElementById("question").innerText = data.evaluation;
-  speak(data.evaluation);
-}
-</script>
-
+      fetch(`${API_BASE}/api/interview/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          interviewType,
+          answers: allAnswers
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("feedback").innerText = data.feedback;
+      });
+    }
+  </script>
 
 </body>
 </html>
-
-
