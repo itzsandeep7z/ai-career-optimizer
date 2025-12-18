@@ -18,15 +18,15 @@
 <!-- ================= RESUME CREATOR ================= -->
 <section class="card">
   <h2>Resume Creator</h2>
+  
+<input id="rc-name" type="text" placeholder="Full Name">
+<input id="rc-skills" type="text" placeholder="Skills">
+<input id="rc-education" type="text" placeholder="Education">
+<input id="rc-projects" type="text" placeholder="Projects">
 
-  <input id="rc-name" type="text" placeholder="Full Name" />
-  <input id="rc-skills" type="text" placeholder="Skills (comma separated)" />
-  <input id="rc-education" type="text" placeholder="Education" />
-  <input id="rc-projects" type="text" placeholder="Projects" />
+<button onclick="generateResume()">Generate Resume</button>
+<pre id="resumeOutput"></pre>
 
-  <button onclick="generateResume()">Generate Resume</button>
-
-  <pre id="resumeOutput"></pre>
 </section>
 
 <!-- ================= RESUME ENHANCER ================= -->
@@ -34,21 +34,12 @@
   <h2>Resume Enhancer</h2>
 
   <!-- 🔴 IDs WERE MISSING BEFORE -->
-  <textarea
-    id="re-resume"
-    placeholder="Paste your resume here"
-    rows="8"
-  ></textarea>
+<textarea id="re-text" placeholder="Paste your resume here" rows="8"></textarea>
+<input id="re-role" type="text" placeholder="Target Role">
 
-  <input
-    id="re-role"
-    type="text"
-    placeholder="Target Role"
-  />
+<button onclick="enhanceResume()">Enhance Resume</button>
+<pre id="enhancedOutput"></pre>
 
-  <button onclick="enhanceResume()">Enhance Resume</button>
-
-  <pre id="enhancedOutput"></pre>
 </section>
 
 <!-- ================= MOCK INTERVIEW (UNCHANGED) ================= -->
@@ -68,4 +59,5 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
