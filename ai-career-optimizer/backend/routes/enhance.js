@@ -11,9 +11,7 @@ router.post("/", async (req, res) => {
     const { resume, targetRole } = req.body;
 
     if (!resume || !targetRole) {
-      return res.status(400).json({
-        error: "Resume and target role are required"
-      });
+      return res.status(400).json({ error: "Missing input" });
     }
 
     const prompt = `
@@ -31,10 +29,7 @@ ${resume}
       enhancedResume: completion.choices[0].message.content
     });
   } catch (err) {
-    res.status(500).json({
-      error: "Resume enhancement failed",
-      details: err.message
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 
