@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const resumeRoutes = require("./routes/resume");
+const resumeRoutes = require("./route/resume");
 
 const app = express();
 app.use(cors());
@@ -22,3 +22,4 @@ app.use("/api/interview", interviewRoutes);
 app.listen(PORT, () => {
   console.log("Server started on port " + PORT);
 });
+
