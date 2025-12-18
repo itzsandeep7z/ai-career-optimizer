@@ -11,13 +11,12 @@ router.post("/create", async (req, res) => {
     const { name, skills, education, projects } = req.body;
 
     if (!name || !skills || !education) {
-      return res.status(400).json({
-        error: "Name, skills, and education are required"
-      });
+      return res.status(400).json({ error: "Missing fields" });
     }
 
     const prompt = `
-Create a professional resume using:
+Create a professional resume.
+
 Name: ${name}
 Skills: ${skills}
 Education: ${education}
@@ -33,10 +32,7 @@ Projects: ${projects || "Not provided"}
       resume: completion.choices[0].message.content
     });
   } catch (err) {
-    res.status(500).json({
-      error: "Resume generation failed",
-      details: err.message
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 
