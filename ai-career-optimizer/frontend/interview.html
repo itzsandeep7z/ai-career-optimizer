@@ -3,123 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <title>AI Mock Interview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-  <h2>AI Mock Interview</h2>
+<header class="header">
+  <h1>AI Mock Interview</h1>
+  <p>Real-world interview practice powered by AI</p>
+</header>
+
+<section class="card">
+  <h2>Interview Setup</h2>
 
   <input
+    id="interview-role"
     type="text"
-    id="interviewType"
-    placeholder="e.g. Java Developer Interview, HR Interview, Law Interview"
+    placeholder="e.g. Java Developer, HR Interview, Law Interview"
   />
 
-  <br><br>
-
   <button onclick="startInterview()">Start Interview</button>
-  <button onclick="startVoiceInput()">🎤 Speak Answer</button>
-  <button onclick="submitAnswer()">Submit Answer</button>
-  <button onclick="finishInterview()">Done</button>
+</section>
 
-  <h3>AI Question:</h3>
-  <p id="question"></p>
+<section class="card">
+  <h2>Interview Session</h2>
 
-  <h3>Your Answer:</h3>
-  <textarea id="answer" rows="5"></textarea>
+  <div class="qa-box">
+    <strong>AI Question</strong>
+    <div id="ai-question" class="qa-content">Waiting for interview to start...</div>
+  </div>
 
-  <h3>AI Feedback:</h3>
-  <p id="feedback"></p>
+  <div class="qa-box">
+    <strong>Your Answer</strong>
+    <textarea id="user-answer" rows="5" placeholder="Type or speak your answer"></textarea>
+  </div>
 
-  <script>
-    const API_BASE = "https://ai-career-optimizer.onrender.com";
+  <div class="btn-row">
+    <button onclick="speakAnswer()">🎙 Speak</button>
+    <button onclick="submitAnswer()">Submit</button>
+    <button onclick="endInterview()">Done</button>
+  </div>
+</section>
 
-    let currentQuestion = "";
-    let allAnswers = [];
-    let recognition;
+<section class="card">
+  <h2>AI Feedback</h2>
+  <div id="ai-feedback" class="qa-content">Feedback will appear here.</div>
+</section>
 
-    /* ---------- AI VOICE OUTPUT ---------- */
-    function speakAI(text) {
-      if (!text) return;
-      const speech = new SpeechSynthesisUtterance(text);
-      speech.lang = "en-US";
-      window.speechSynthesis.speak(speech);
-    }
+<footer class="footer">
+  <div>Tech and Production</div>
+  <div class="brand">Runtime Rookies</div>
+</footer>
 
-    /* ---------- USER VOICE INPUT ---------- */
-    function startVoiceInput() {
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = "en-US";
-      recognition.start();
-
-      recognition.onresult = function (event) {
-        document.getElementById("answer").value =
-          event.results[0][0].transcript;
-      };
-    }
-
-    /* ---------- START INTERVIEW ---------- */
-    function startInterview() {
-      const interviewType = document.getElementById("interviewType").value;
-
-      fetch(`${API_BASE}/api/interview/start`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ interviewType })
-      })
-      .then(res => res.json())
-      .then(data => {
-        currentQuestion = data.question;
-        document.getElementById("question").innerText = data.question;
-        speakAI(data.question);
-      });
-    }
-
-    /* ---------- SUBMIT ANSWER ---------- */
-    function submitAnswer() {
-      const interviewType = document.getElementById("interviewType").value;
-      const answer = document.getElementById("answer").value;
-
-      allAnswers.push(`Q: ${currentQuestion}\nA: ${answer}`);
-
-      fetch(`${API_BASE}/api/interview/answer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          interviewType,
-          question: currentQuestion,
-          answer
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("feedback").innerText = data.feedback;
-        document.getElementById("question").innerText = data.nextQuestion;
-        currentQuestion = data.nextQuestion;
-        speakAI(data.nextQuestion);
-        document.getElementById("answer").value = "";
-      });
-    }
-
-    /* ---------- FINAL FEEDBACK ---------- */
-    function finishInterview() {
-      const interviewType = document.getElementById("interviewType").value;
-
-      fetch(`${API_BASE}/api/interview/feedback`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          interviewType,
-          answers: allAnswers
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("feedback").innerText = data.feedback;
-        speakAI(data.feedback);
-      });
-    }
-  </script>
-
+<script src="interview.js"></script>
 </body>
 </html>
